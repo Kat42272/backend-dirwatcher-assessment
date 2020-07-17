@@ -13,13 +13,22 @@ __author__ = "Kathryn Anderson"
 
 
 import sys
+import argparse
 
 
 def create_parser():
     """
     Command Line Parser
     """
-    pass
+
+    parser = argparse.ArgumentParser(
+        description="Watch directory for files containing certain text"
+    )
+    parser.add_argument('--dir', help='directory being watched', nargs='+')
+    parser.add_argument('--ext', help='file extension to filter on', nargs='+')
+    parser.add_argument('--magic', help='magic text to search directory for', nargs='+')
+    parser.add_argument('-i', default=2, help='polling interval', nargs='+')
+    return parser
 
 
 def magic_text_func():
