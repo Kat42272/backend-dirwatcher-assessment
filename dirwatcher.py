@@ -22,12 +22,6 @@ import signal
 from os import walk
 
 
-
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s:\
-        %(levelname)s:%(message)s:%(threadName)s:')
-logit = logging.getLogger(__name__)
-
-
 dict_of_files = {}
 
 def spec_file_func(ns):
@@ -122,10 +116,10 @@ def create_parser():
     parser = argparse.ArgumentParser(
         description="Watch directory for files containing certain text"
     )
-    parser.add_argument('--dir', help='directory being watched', nargs='+')
-    parser.add_argument('--ext', help='file extension to filter on', nargs='+')
-    parser.add_argument('--magic', help='magic text to search directory for', nargs='+')
-    parser.add_argument('-i', default=2, help='polling interval', nargs='+')
+    parser.add_argument('dir', nargs="+", help='directory being watched')
+    parser.add_argument('ext', nargs="+", default=".txt", help='file extension to filter on')
+    parser.add_argument('magic', nargs="+", help='magic text to search directory for')
+    parser.add_argument('--interval', type=int, default=1, help='polling interval')
     return parser
 
 
@@ -140,9 +134,17 @@ def sig_func(sig_num, frame):
     """
     
     global exit_flag
-    run_time = run_time_func()
-    logit.info(f"\n{56 * '-'}\nDirWatcher.py Program Has Stopped\n\
-                Uptime was {run_time}\n{56 * '-'}\n")
+    global time_to_start
+    logit = logging.getLogger(__name__)
+
+    logit.setLevel(logging.WARNING)
+    logit.warning(f'Received OS Process Signal, {signal.Signals(sig_num).name}')
+
+    logit_2 = logging.getLogger(__name__)
+    logit_2.setLevel(logging.INFO)
+    logit_2.info(
+        f"\nStopped: {sys.argv[0]}\nUptime was: {datetime.datetime.now() - time_to_start}")
+    
     exit_flag = True
 
 
