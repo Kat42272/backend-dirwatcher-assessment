@@ -9,7 +9,7 @@ deleted files, and internally changed files) they will take place
 without any action on the part of the user. 
 """
 
-__author__ = "Kathryn Anderson"
+__author__ = "Kathryn Anderson with help from Daniel Lomelino."
 
 
 import sys
@@ -26,7 +26,6 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s:\
         %(levelname)s:%(message)s')
 logit = logging.getLogger(__name__)
 logit.setLevel(logging.INFO)
-
 
 dict_of_files = {}
 
@@ -62,8 +61,7 @@ def match_file_func(temp_spec_file, ns):
     """
     This function looks for files that have changed from the original
     directory and compares it to a temp directory to recognize changes.
-    """
-    
+    """    
     try:
         for k in temp_spec_file:
             if k not in dict_of_files:
@@ -80,20 +78,17 @@ def match_file_func(temp_spec_file, ns):
     magic_text_func(ns)
 
 
-
 def magic_text_func(ns):
     """
     This function uses specific "magic" text to look through the
     specified directory for the "magic" text
-    """
-    
+    """    
     try:
         for key in dict_of_files:
             with open(ns.dir + "/" + key, "r") as f:
                 lines = f.readlines()
                 for i, line in enumerate(lines):
-                    result = re.search('(.+)' + ns.magic + '(.+)', line)
-                    if result and i not in dict_of_files[key]:
+                    if ns.magic in line and i not in dict_of_files[key]:
                         dict_of_files[key].append(i)
                         logit.info(
                             f"Magic text found in file: {key} was found on line {str(i + 1)}")
@@ -101,14 +96,11 @@ def magic_text_func(ns):
         logit.exception(f"The {inst} error has occured.")
 
 
-
-
 def run_time_func():
     """
     This function uses a predetermined amount of time to monitor
     the directory for changes.
     """
-
     return time.time() - time_to_start
 
 
@@ -138,9 +130,7 @@ def sig_func(sig_num, frame):
     """
     
     global exit_flag
-
-    logit.warning(f'Received OS Process Signal, {signal.Signals(sig_num).name}')
-
+    logit.warning('Received ' + signal.Signals(sig_num).name)
     exit_flag = True
 
 
@@ -152,7 +142,7 @@ def main(args):
     
     parser = create_parser()
     ns = parser.parse_args(args)
-    logit.info(f"\n{56 * '-'}\nDirWatcher.py Program Has Started\n{56 * '-'}\n")
+    logit.info(f"\n{66 * '-'}\n\t\tDirWatcher.py Program Has Started\n{66 * '-'}\n")
     signal.signal(signal.SIGINT, sig_func)
     signal.signal(signal.SIGTERM, sig_func)
     logger_int = 1
@@ -167,7 +157,7 @@ def main(args):
         time.sleep(logger_int)
 
     logit.info(
-        f"\nStopped: {sys.argv[0]}\nUptime was: {datetime.datetime.now() - time_to_start}")
+        f"\n\t\t\t\tStopped: {sys.argv[0]}\n\t\t\t\tUptime was: {datetime.datetime.now() - time_to_start}")
 
 if __name__ == '__main__':
     main(sys.argv[1:])
